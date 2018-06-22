@@ -1,0 +1,102 @@
+@font-face {
+    font-family: 'Yekan';
+    src: url('../fonts/Yekan.eot');
+    src: local('*'),
+    url('../fonts/Yekan.woff') format('woff'),
+    url('../fonts/Yekan.ttf') format('truetype'),
+    url('../fonts/Yekan.svg') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body, .ui.menu, .ui.button, h2 {
+    direction: rtl;
+    font-family: Yekan, sans-serif;
+}
+
+.ui.fluid.container {
+    background-color: #f5f7fb;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+
+/*Menu Style*/
+.ui.inverted.text.menu {
+    font-size: medium;
+    font-weight: bolder;
+    margin-top: 0;
+    padding-top: 20px;
+}
+
+#particles-js > div > div > a.item{
+    margin-left: 30px;
+}
+
+.ui.container > div > div > div {
+    font-size: small;
+}
+
+
+/*Particle Style*/
+#particles-js {
+    background: linear-gradient(#0A152C, #0069FF);
+    border-radius: 0px 0px 50% 50% / 0px 0px 30px 30px;
+}
+
+/*Header Segment*/
+.header-segment {
+    position: absolute;
+	top: 350px;
+	right: 50%;
+	transform: translate(50%,-50%);
+	max-width: 90%;
+	padding: 2em 3em;
+    color: #fff;
+	text-shadow: 0px 0px 2px #131415;
+    text-align: center;
+}
+
+.header-segment h1 {
+    font-size: 30px;
+    font-weight: 800;
+}
+
+/*Our Customer*/
+.our-customers {
+    padding-top: 40px;
+    text-align: center;
+    color: #031b4e;
+}
+.our-customers > div > div > .item {
+    margin:0 30px;
+}
+.ui.horizontal.divider {
+    margin: 5px 30px 60px 30px;
+}
+.ui.raised.segment {
+    margin: 20px;
+    padding: 40px;
+    text-align: right;
+    font-size: 15px;
+}
+.ui.green.raised.segment {
+    border-top: 5px solid #21ba45;
+}
+.ui.yellow.raised.segment {
+    border-top: 5px solid #fbbd08;
+}
+.ui.blue.raised.segment {
+    border-top: 5px solid #2185d0;
+}
+.our-customers > div > div.ui.raised.segment > div {
+    font-family: Yekan, sans-serif;
+}
+
+/*Footer*/
+.ui.inverted.segment {
+    border-radius: 50% 50% 0px 0px / 20px 20px 0px 0px ;
+    background-color: #010e28;
+    text-align: center;
+    color: #ffffff80;
+}
