@@ -1,47 +1,12 @@
 {% extends 'base.html' %}
 
-{% load static %}
+{% block title %}Login{% endblock %}
 
-{% block extra_style %}
-    <link rel="stylesheet" href="{% static 'login/login.css' %}">
-{% endblock %}
-
-{% block extra_js %}
-    <script src="{% static 'login/login.js' %}"></script>
-{% endblock %}
-
-{% block contents %}
-    <div class="ui middle aligned center aligned grid" style="margin-top:100px;">
-        <div class="column">
-            <h2 class="ui image header">
-                <div class="content">
-                    Log-in to your account
-                </div>
-            </h2>
-            <form action= method="get" class="ui large form">
-                <div class="ui stacked secondary  segment">
-                    <div class="field">
-                        <div class="ui left icon input">
-                            <i class="user icon"></i>
-                            <input type="text" name="email" placeholder="E-mail address">
-                        </div>
-                    </div>
-                    <div class="field">
-                        <div class="ui left icon input">
-                            <i class="lock icon"></i>
-                            <input type="password" name="password" placeholder="Password">
-                        </div>
-                    </div>
-                    <div class="ui fluid large teal submit button">Login</div>
-                </div>
-
-                <div class="ui error message"></div>
-
-            </form>
-
-            <div class="ui message">
-                New to us? <a href="https://s.codepen.io/voltron2112/debug/PqrEPM?">Register</a>
-            </div>
-        </div>
-    </div>
+{% block content %}
+  <h2>Login</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Login</button>
+  </form>
 {% endblock %}
