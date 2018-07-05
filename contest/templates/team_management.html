@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>{{ team.name }}</h2>
+    <ul>
+        {% for member in team_member %}
+            <li>{{ member }}</li>
+        {% endfor %}
+    </ul>
+    <br>
+    <h2>Invitation</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Invite</button>
+    </form>
+    <ul>
+        {% for invitation in invitations %}
+            <li>{{ invitation }}</li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}

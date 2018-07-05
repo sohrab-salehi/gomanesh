@@ -2,6 +2,8 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 
+from .models import Team, Invitation
+
 
 class SignUpForm(UserCreationForm):
     first_name = forms.CharField()
@@ -13,3 +15,13 @@ class SignUpForm(UserCreationForm):
         fields = ('first_name', 'last_name', 'email', 'phone_number', 'password1', 'password2', )
 
 
+class TeamCreationForm(forms.ModelForm):
+    class Meta:
+        model = Team
+        fields = ('name',)
+
+
+class InviteForm(forms.ModelForm):
+    class Meta:
+        model = Invitation
+        fields = ('profile',)
