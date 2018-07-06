@@ -58,7 +58,30 @@ def team_creation(request):
             return render(request, 'team_creation.html', {'form': form})
         else:
             print('You already have a team!')
+            return redirect('team_management')
 
+    print('Authentication error')
+    return redirect('login')
+
+
+def team_delete(request):
+    if request.user.is_authenticated:
+        profile = request.user.profile
+        if profile.admin:
+            if profile.team is None:
+                print("You doesn't have any team")
+                return redirect('team_creation')
+            else:
+                if request.method == 'POST':
+                    Team.objects.get(id=request.user.profile.team.id).delete()
+                    return redirect('home')
+
+                return render(request, 'team_delete.html')
+        else:
+            print('Access denied!')
+            raise Http404
+
+    print('Authentication error')
     return redirect('login')
 
 

@@ -9,6 +9,8 @@
     </ul>
     <br>
     {% if request.user.profile.admin %}
+        <a href="{% url 'team_delete' %}">Delete team</a>
+        <br>
         <a href="{% url 'change_admin' %}">Change admin</a>
         <br>
         <h2>Invitation</h2>

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        <p>Are you sure you want to delete team?</p>
+        <button type="submit">Yes, I'm sure</button>
+        <button onclick="{% url 'team_management' %}">No</button>
+    </form>
+    <br>
+{% endblock %}
