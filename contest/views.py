@@ -59,7 +59,7 @@ def team_creation(request):
         else:
             print('You already have a team!')
 
-    raise Http404
+    return redirect('login')
 
 
 def team_management(request):
@@ -75,11 +75,11 @@ def team_management(request):
                 form = InviteForm(request.POST)
                 if form.is_valid():
                     requested_profile = form.cleaned_data.get('profile')
-                    if requested_profile not in team_member:
+                    if requested_profile not in team_member and requested_profile.team is None:
                         invitation = Invitation(team=profile.team, profile=requested_profile)
                         invitation.save()
                     else:
-                        print('User already is in team!')
+                        print('User has a team!')
             invitations = Invitation.objects.filter(team=profile.team)
             return render(request, 'team_management.html', {'team_member': team_member, 'team': profile.team,
                                                             'form': form, 'invitations': invitations})
@@ -88,6 +88,22 @@ def team_management(request):
             raise Http404
 
     print('Authentication error')
-    raise Http404
+    return redirect('login')
 
 
+def invitation_page(request):
+    if request.user.is_authenticated:
+        profile = request.user.profile
+        if profile.team is None:
+            if request.method == 'POST':
+                profile.team = Team.objects.get(name=request.POST['team'])
+                profile.save()
+                return redirect('team_management')
+            else:
+                invitations = Invitation.objects.filter(profile=profile)
+                return render(request, 'invitation.html', {'invitations': invitations})
+        else:
+            print('User has a team!', profile.team, profile)
+            raise Http404
+    print('Authentication error')
+    return redirect('login')

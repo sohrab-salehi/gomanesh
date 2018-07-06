@@ -3,7 +3,13 @@
 {% block content %}
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
+        {% for invitation in invitations %}
+            <div>
+                <input type="radio" id="{{ invitation.team.name }}" value="{{ invitation.team.name }}" name="team" checked />
+                <label for="{{ invitation.team.name }}">{{ invitation.team.name }}</label>
+            </div>
+        {% endfor %}
+        <button type="submit">Accept</button>
     </form>
     <br>
 {% endblock %}
