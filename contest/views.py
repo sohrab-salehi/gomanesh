@@ -111,6 +111,31 @@ def team_management(request):
     return redirect('login')
 
 
+def delete_member(request):
+    if request.user.is_authenticated:
+        profile = request.user.profile
+        if profile.admin:
+            if profile.team is None:
+                print("You doesn't have any team")
+                return redirect('team_creation')
+            else:
+                if request.method == 'POST':
+                    members_id = request.POST['member']
+                    for id in members_id:
+                        member = Profile.objects.get(id=id)
+                        if not member.admin:
+                            member.team = None
+                    return redirect('team_management')
+                else:
+                    return redirect('team_management')
+        else:
+            print('Access denied!')
+            raise Http404
+
+    print('Authentication error')
+    return redirect('login')
+
+
 def invitation_page(request):
     if request.user.is_authenticated:
         profile = request.user.profile

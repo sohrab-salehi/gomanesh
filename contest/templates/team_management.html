@@ -2,13 +2,18 @@
 
 {% block content %}
     <h2>{{ team.name }}</h2>
-    <ul>
-        {% for member in team_member %}
-            <li>{{ member }}</li>
-        {% endfor %}
-    </ul>
     <br>
     {% if request.user.profile.admin %}
+        <form method="post" action="{% url 'delete_member' %}">
+            {% csrf_token %}
+            {% for member in team_member %}
+                <input type="checkbox" id="{{ member.id }}" value="{{ member.id }}" name="member"/>
+                <label for="{{ member.id }}">{{ member }}</label>
+                <br>
+            {% endfor %}
+            <button type="submit">Delete</button>
+        </form>
+        <br>
         <a href="{% url 'team_delete' %}">Delete team</a>
         <br>
         <a href="{% url 'change_admin' %}">Change admin</a>
@@ -22,6 +27,12 @@
         <ul>
             {% for invitation in invitations %}
                 <li>{{ invitation }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <ul>
+            {% for member in team_member %}
+                <li>{{ member }}</li>
             {% endfor %}
         </ul>
     {% endif %}
