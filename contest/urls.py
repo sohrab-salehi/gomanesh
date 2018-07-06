@@ -11,4 +11,5 @@ urlpatterns = [
     path('invitation/', views.invitation_page, name='invitation'),
     path('team/creation', views.team_creation, name='team_creation'),
     path('team/management', views.team_management, name='team_management'),
+    path('team/change_admin', views.change_admin, name='change_admin'),
 ]

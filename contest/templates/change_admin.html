@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        {% for member in team_member %}
+            <div>
+                <input type="radio" id="{{ member.user.id }}" value="{{ member.user.id }}" name="profile_id" checked />
+                <label for="{{ member.user.id }}">{{ member }}</label>
+            </div>
+        {% endfor %}
+        <button type="submit">Change</button>
+    </form>
+    <br>
+{% endblock %}

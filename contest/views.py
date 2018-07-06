@@ -68,7 +68,7 @@ def team_management(request):
         if profile.team is None:
             print("This user doesn't have team yet.")
             raise Http404
-        if profile.admin:
+        else:
             team_member = Profile.objects.filter(team=profile.team)
             form = InviteForm()
             if request.method == 'POST':
@@ -83,9 +83,6 @@ def team_management(request):
             invitations = Invitation.objects.filter(team=profile.team)
             return render(request, 'team_management.html', {'team_member': team_member, 'team': profile.team,
                                                             'form': form, 'invitations': invitations})
-        else:
-            print('Access denied!')
-            raise Http404
 
     print('Authentication error')
     return redirect('login')
@@ -98,6 +95,7 @@ def invitation_page(request):
             if request.method == 'POST':
                 profile.team = Team.objects.get(name=request.POST['team'])
                 profile.save()
+                Invitation.objects.filter(profile=profile).delete()
                 return redirect('team_management')
             else:
                 invitations = Invitation.objects.filter(profile=profile)
@@ -105,5 +103,32 @@ def invitation_page(request):
         else:
             print('User has a team!', profile.team, profile)
             raise Http404
+
+    print('Authentication error')
+    return redirect('login')
+
+
+def change_admin(request):
+    if request.user.is_authenticated:
+        profile = request.user.profile
+        if profile.team is None:
+            print("User doesn't have a team!", profile.team, profile)
+            raise Http404
+        else:
+            if profile.admin:
+                team_member = Profile.objects.filter(team=profile.team)
+                if request.method == 'POST':
+                    new_admin = Profile.objects.get(user__id=request.POST['profile_id'])
+                    new_admin.admin = True
+                    profile.admin = False
+                    new_admin.save()
+                    profile.save()
+                    return redirect('home')
+                else:
+                    return render(request, 'change_admin.html', {'team_member': team_member})
+            else:
+                print('Access denied!')
+                raise Http404
+
     print('Authentication error')
     return redirect('login')

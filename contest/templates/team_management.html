@@ -8,16 +8,20 @@
         {% endfor %}
     </ul>
     <br>
-    <h2>Invitation</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Invite</button>
-    </form>
-    <ul>
-        {% for invitation in invitations %}
-            <li>{{ invitation }}</li>
-        {% endfor %}
-    </ul>
+    {% if request.user.profile.admin %}
+        <a href="{% url 'change_admin' %}">Change admin</a>
+        <br>
+        <h2>Invitation</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Invite</button>
+        </form>
+        <ul>
+            {% for invitation in invitations %}
+                <li>{{ invitation }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 
 {% endblock %}

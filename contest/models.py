@@ -34,7 +34,7 @@ class Profile(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     phone_number = models.CharField(max_length=15, blank=True)
-    team = models.ForeignKey(Team, on_delete=models.SET_NULL, default=None, null=True)
+    team = models.ForeignKey(Team, on_delete=models.SET_NULL, default=None, null=True, blank=True)
     admin = models.BooleanField(default=False)
 
     def __str__(self):
