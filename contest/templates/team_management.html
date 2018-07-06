@@ -2,7 +2,6 @@
 
 {% block content %}
     <h2>{{ team.name }}</h2>
-    <br>
     {% if request.user.profile.admin %}
         <form method="post" action="{% url 'delete_member' %}">
             {% csrf_token %}
@@ -29,12 +28,27 @@
                 <li>{{ invitation }}</li>
             {% endfor %}
         </ul>
+        <br>
+        <h2>Resign Requests</h2>
+        <form method="post" action="{% url 'accept_resign' %}">
+            {% csrf_token %}
+            {% for resign in resign_requests %}
+                <input type="checkbox" id="{{ resign.id }}" value="{{ resign.id }}" name="resign"/>
+                <label for="{{ resign.id }}">{{ resign }}</label>
+                <br>
+            {% endfor %}
+            <button type="submit">Accept</button>
+        </form>
     {% else %}
         <ul>
             {% for member in team_member %}
                 <li>{{ member }}</li>
             {% endfor %}
         </ul>
+        <br>
+        <h2>Resign Requests</h2>
+        <p>{{ user_resign_request }}</p>
+        <button onclick="window.location.href='{% url "resign_request" %}'">Resign</button>
     {% endif %}
 
 {% endblock %}

@@ -8,4 +8,5 @@ admin.site.register(Team)
 admin.site.register(Match)
 admin.site.register(MatchTeam)
 admin.site.register(Invitation)
+admin.site.register(Resign)
 

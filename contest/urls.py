@@ -13,5 +13,7 @@ urlpatterns = [
     path('team/delete', views.team_delete, name='team_delete'),
     path('team/management', views.team_management, name='team_management'),
     path('team/change_admin', views.change_admin, name='change_admin'),
-    path('team/delete_member', views.delete_member, name='delete_member')
+    path('team/delete_member', views.delete_member, name='delete_member'),
+    path('team/resign_request', views.resign_request, name='resign_request'),
+    path('team/accept_resign', views.accept_resign, name='accept_resign')
 ]

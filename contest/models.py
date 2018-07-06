@@ -69,5 +69,23 @@ class Invitation(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
 
+    class Meta:
+        unique_together = (('team', 'profile'),)
+
     def __str__(self):
         return self.team.name + ' --> ' + self.profile.__str__()
+
+
+class Resign(models.Model):
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    pending = models.BooleanField()
+
+    class Meta:
+        unique_together = (('team', 'profile'),)
+
+    def __str__(self):
+        status = 'Closed'
+        if self.pending:
+            status = 'Pending'
+        return self.profile.__str__() + ' resign from ' + self.team.name + ' (' + status + ')'

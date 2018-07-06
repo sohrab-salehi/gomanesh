@@ -4,7 +4,7 @@ from django.http.response import Http404
 from django.db.models.query import QuerySet
 
 from .forms import SignUpForm, TeamCreationForm, InviteForm
-from .models import Contest, Team, Profile, Invitation
+from .models import *
 
 
 def home(request):
@@ -93,6 +93,11 @@ def team_management(request):
             raise Http404
         else:
             team_member = Profile.objects.filter(team=profile.team)
+            resign_requests = Resign.objects.filter(team=profile.team)
+            try:
+                user_resign_request = Resign.objects.get(profile=profile)
+            except:
+                user_resign_request = ''
             form = InviteForm()
             if request.method == 'POST':
                 form = InviteForm(request.POST)
@@ -105,7 +110,9 @@ def team_management(request):
                         print('User has a team!')
             invitations = Invitation.objects.filter(team=profile.team)
             return render(request, 'team_management.html', {'team_member': team_member, 'team': profile.team,
-                                                            'form': form, 'invitations': invitations})
+                                                            'form': form, 'invitations': invitations,
+                                                            'resign_requests': resign_requests,
+                                                            'user_resign_request': user_resign_request})
 
     print('Authentication error')
     return redirect('login')
@@ -177,6 +184,52 @@ def change_admin(request):
             else:
                 print('Access denied!')
                 raise Http404
+
+    print('Authentication error')
+    return redirect('login')
+
+
+def resign_request(request):
+    if request.user.is_authenticated:
+        profile = request.user.profile
+        if profile.team is None:
+            print("User doesn't have a team!", profile.team, profile)
+            raise Http404
+        else:
+            if profile.admin:
+                print("Admin can't resign")
+                return redirect('team_management')
+            else:
+                resign = Resign(team=profile.team, profile=profile, pending=True)
+                resign.save()
+                return redirect('team_management')
+
+    print('Authentication error')
+    return redirect('login')
+
+
+def accept_resign(request):
+    if request.user.is_authenticated:
+        profile = request.user.profile
+        if profile.admin:
+            if profile.team is None:
+                print("You doesn't have any team")
+                return redirect('team_creation')
+            else:
+                if request.method == 'POST':
+                    resigns_id = request.POST['resign']
+                    for id in resigns_id:
+                        resign = Resign.objects.get(id=id)
+                        resigned_memeber = resign.profile
+                        resigned_memeber.team = None
+                        resigned_memeber.save()
+                        resign.delete()
+                    return redirect('team_management')
+                else:
+                    return redirect('team_management')
+        else:
+            print('Access denied!')
+            raise Http404
 
     print('Authentication error')
     return redirect('login')

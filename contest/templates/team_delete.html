@@ -5,7 +5,7 @@
         {% csrf_token %}
         <p>Are you sure you want to delete team?</p>
         <button type="submit">Yes, I'm sure</button>
-        <button onclick="{% url 'team_management' %}">No</button>
+        <button onclick="window.location.href={% url 'team_management' %}">No</button>
     </form>
     <br>
 {% endblock %}
