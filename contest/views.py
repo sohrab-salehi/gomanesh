@@ -174,11 +174,11 @@ def change_admin(request):
                 team_member = Profile.objects.filter(team=profile.team)
                 if request.method == 'POST':
                     new_admin = Profile.objects.get(user__id=request.POST['profile_id'])
-                    new_admin.admin = True
                     profile.admin = False
-                    new_admin.save()
                     profile.save()
-                    return redirect('home')
+                    new_admin.admin = True
+                    new_admin.save()
+                    return redirect('team_management')
                 else:
                     return render(request, 'change_admin.html', {'team_member': team_member})
             else:
