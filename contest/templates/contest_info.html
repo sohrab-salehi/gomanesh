@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{{ contest.name }}</h1>
+    <h2>Teams:</h2>
+    <ul>
+        {% for team in teams %}
+            <li>{{ team.name }}</li>
+        {% endfor %}
+    </ul>
+    {% if request.user.is_authenticated and request.user.profile.admin%}
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit">Participate</button>
+        </form>
+    {% endif %}
+{% endblock %}

@@ -1,7 +1,6 @@
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
 from django.http.response import Http404
-from django.db.models.query import QuerySet
 
 from .forms import SignUpForm, TeamCreationForm, InviteForm
 from .models import *
@@ -105,7 +104,10 @@ def team_management(request):
                     requested_profile = form.cleaned_data.get('profile')
                     if requested_profile not in team_member and requested_profile.team is None:
                         invitation = Invitation(team=profile.team, profile=requested_profile)
-                        invitation.save()
+                        try:
+                            invitation.save()
+                        except:
+                            print('You sent invitation before')
                     else:
                         print('User has a team!')
             invitations = Invitation.objects.filter(team=profile.team)
@@ -233,3 +235,41 @@ def accept_resign(request):
 
     print('Authentication error')
     return redirect('login')
+
+
+def contests_page(request):
+    contests = Contest.objects.filter(activation=True)
+    return render(request, 'contests.html', {'contests': contests})
+
+
+def contest_info(request, contest_id):
+    if request.user.is_authenticated:
+        profile = request.user.profile
+        try:
+            contest = Contest.objects.get(id=contest_id)
+        except:
+            print('Contest not found!')
+            raise Http404
+        team_contests = TeamContest.objects.filter(contest=contest)
+        teams = []
+        for entry in team_contests:
+            teams.append(entry.team)
+        if request.method == 'POST' and profile.admin:
+            if profile.team not in teams:
+                team_contest = TeamContest(contest=contest, team=profile.team)
+                team_contest.save()
+                contest.team_number += 1
+                contest.save()
+                teams = TeamContest.objects.filter(contest=contest)
+            else:
+                print('You already participate')
+
+        return render(request, 'contest_info.html', {'contest': contest, 'teams': teams})
+
+    print('Authentication error')
+    return redirect('login')
+
+
+def match_definition(request):
+    if request.user.has_perm('contest.can_add_match'):
+        print("success")

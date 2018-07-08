@@ -15,5 +15,8 @@ urlpatterns = [
     path('team/change_admin', views.change_admin, name='change_admin'),
     path('team/delete_member', views.delete_member, name='delete_member'),
     path('team/resign_request', views.resign_request, name='resign_request'),
-    path('team/accept_resign', views.accept_resign, name='accept_resign')
+    path('team/accept_resign', views.accept_resign, name='accept_resign'),
+    path('contest/', views.contests_page, name='contest'),
+    path('contest/<int:contest_id>/', views.contest_info, name='contest_info'),
+    path('admin/match/create/', views.match_definition, name='match_definition')
 ]

@@ -10,23 +10,28 @@ class Contest(models.Model):
     place = models.TextField()
     description = models.TextField()
     type = models.CharField(max_length=50)
+    team_number = models.IntegerField(default=0)
     poster = models.ImageField(null=True, blank=True)
     activation = models.BooleanField(default=True)
 
     def __str__(self):
-        return 'Contest: {}'.format(self.date)
+        return '{} ({}): {}  ,Team number: {}'.format(self.name, self.type, self.date, self.team_number)
 
 
 class Team(models.Model):
-    name = models.CharField(max_length=50)
-    contest = models.ForeignKey(Contest, on_delete=models.CASCADE, null=True)
+    name = models.CharField(max_length=50, unique=True)
     score = models.IntegerField(default=0)
-
-    class Meta:
-        unique_together = (('name', 'contest'),)
 
     def __str__(self):
         return self.name
+
+
+class TeamContest(models.Model):
+    contest = models.ForeignKey(Contest, on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = (('team', 'contest'),)
 
 
 class Profile(models.Model):
@@ -63,6 +68,7 @@ class Match(models.Model):
 class MatchTeam(models.Model):
     match = models.ForeignKey(Match, on_delete=models.CASCADE, null=True)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True)
+    score = models.IntegerField(default=0)
 
 
 class Invitation(models.Model):
