@@ -8,6 +8,7 @@ urlpatterns = [
     path('login/', auth_views.login, {'template_name': 'login.html'}, name='login'),
     path('logout/', auth_views.logout, name='logout'),
     path('signup/', views.signup, name='signup'),
+    path('dashboard/', views.dashboard, name='dashboard'),
     path('invitation/', views.invitation_page, name='invitation'),
     path('team/creation', views.team_creation, name='team_creation'),
     path('team/delete', views.team_delete, name='team_delete'),
@@ -18,5 +19,6 @@ urlpatterns = [
     path('team/accept_resign', views.accept_resign, name='accept_resign'),
     path('contest/', views.contests_page, name='contest'),
     path('contest/<int:contest_id>/', views.contest_info, name='contest_info'),
+    path('admin/match/', views.match_management, name='match_management'),
     path('admin/match/create/', views.match_definition, name='match_definition')
 ]

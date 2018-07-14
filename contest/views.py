@@ -265,6 +265,13 @@ def contest_info(request, contest_id):
     return redirect('login')
 
 
+def match_management(request):
+    if request.user.has_perms('contest.can_change_match'):
+        print('ok')
+
+    print('Access denied')
+
+
 def match_definition(request):
     if request.user.has_perm('contest.can_add_match'):
         if request.method == 'POST':
@@ -277,11 +284,8 @@ def match_definition(request):
                 match.save()
                 teams = form.cleaned_data.get('teams')
                 for team in teams:
-                    try:
-                        match_team = MatchTeam(match=match, team=team)
-                        match_team.save()
-                    except:
-                        print(team.name + ' is in match')
+                    match_team = MatchTeam(match=match, team=team)
+                    match_team.save()
                 print('Success')
                 return redirect('home')
             else:
@@ -293,3 +297,16 @@ def match_definition(request):
 
     print('Access denied!')
     raise Http404
+
+
+def dashboard(request):
+    if request.user.is_authenticated:
+        profile = request.user.profile
+        team = profile.team
+        print(team)
+        matches = team.match_set.all()
+        contests = TeamContest.objects.filter(team=team)
+        return render(request, 'dashboard.html', {'matches': matches, 'contests': contests, 'team': team})
+
+    print('Authentication error')
+    return redirect('login')
