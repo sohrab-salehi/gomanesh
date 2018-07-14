@@ -70,6 +70,9 @@ class MatchTeam(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True)
     score = models.IntegerField(default=0)
 
+    class Meta:
+        unique_together = (('team', 'match'),)
+
 
 class Invitation(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE)

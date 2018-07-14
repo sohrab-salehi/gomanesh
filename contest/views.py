@@ -2,7 +2,7 @@ from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
 from django.http.response import Http404
 
-from .forms import SignUpForm, TeamCreationForm, InviteForm
+from .forms import *
 from .models import *
 
 
@@ -39,18 +39,13 @@ def team_creation(request):
                 if form.is_valid():
                     name = form.cleaned_data.get('name')
                     team = Team(name=name)
-                    try:
-                        team.contest = Contest.objects.get(activation=True)
-                    except:
-                        print("Doesn't find any active contest")
-                        raise Http404
                     team.score = 0
                     team.save()
                     profile = request.user.profile
                     profile.team = team
                     profile.admin = True
                     profile.save()
-                    return redirect('home')
+                    return redirect('team_management')
             else:
                 form = TeamCreationForm()
 
@@ -272,4 +267,29 @@ def contest_info(request, contest_id):
 
 def match_definition(request):
     if request.user.has_perm('contest.can_add_match'):
-        print("success")
+        if request.method == 'POST':
+            form = MatchDefinitionForm(request.POST)
+            if form.is_valid():
+                contest = form.cleaned_data.get('contest')
+                date_time = form.cleaned_data.get('date_time')
+                level = form.cleaned_data.get('level')
+                match = Match(contest=contest, date_time=date_time, level=level)
+                match.save()
+                teams = form.cleaned_data.get('teams')
+                for team in teams:
+                    try:
+                        match_team = MatchTeam(match=match, team=team)
+                        match_team.save()
+                    except:
+                        print(team.name + ' is in match')
+                print('Success')
+                return redirect('home')
+            else:
+                print('Invalid form')
+                raise Http404
+        else:
+            form = MatchDefinitionForm()
+            return render(request, 'match_definition.html', {'form': form})
+
+    print('Access denied!')
+    raise Http404

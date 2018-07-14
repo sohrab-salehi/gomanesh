@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 
-from .models import Team, Invitation
+from .models import Team, Invitation, Match
 
 
 class SignUpForm(UserCreationForm):
@@ -25,3 +25,9 @@ class InviteForm(forms.ModelForm):
     class Meta:
         model = Invitation
         fields = ('profile',)
+
+
+class MatchDefinitionForm(forms.ModelForm):
+    class Meta:
+        model = Match
+        fields = ('contest', 'level', 'date_time', 'teams')
