@@ -1,4 +1,9 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block extra_js %}
+    <script src="{% static 'match_definition/match_definition.js' %}"></script>
+{% endblock%}
 
 {% block content %}
     <form method="post">

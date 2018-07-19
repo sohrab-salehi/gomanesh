@@ -28,6 +28,8 @@ class InviteForm(forms.ModelForm):
 
 
 class MatchDefinitionForm(forms.ModelForm):
+    matches = forms.ModelMultipleChoiceField(queryset=Match.objects.all())
+
     class Meta:
         model = Match
-        fields = ('contest', 'level', 'date_time', 'teams')
+        fields = ('contest', 'date_time', 'level', 'matches', 'teams')

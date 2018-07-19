@@ -20,5 +20,7 @@ urlpatterns = [
     path('contest/', views.contests_page, name='contest'),
     path('contest/<int:contest_id>/', views.contest_info, name='contest_info'),
     path('admin/match/', views.match_management, name='match_management'),
-    path('admin/match/create/', views.match_definition, name='match_definition')
+    path('admin/match/create/', views.match_definition, name='match_definition'),
+    path('admin/match/create/get_matches/', views.get_matches, name='get_matches'),
+    path('admin/match/create/get_teams/', views.get_teams, name='get_teams'),
 ]

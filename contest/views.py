@@ -1,6 +1,7 @@
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
-from django.http.response import Http404
+from django.http.response import Http404, JsonResponse
+import json
 
 from .forms import *
 from .models import *
@@ -247,17 +248,17 @@ def contest_info(request, contest_id):
             raise Http404
         team_contests = TeamContest.objects.filter(contest=contest)
         teams = []
-        for entry in team_contests:
-            teams.append(entry.team)
         if request.method == 'POST' and profile.admin:
             if profile.team not in teams:
                 team_contest = TeamContest(contest=contest, team=profile.team)
                 team_contest.save()
                 contest.team_number += 1
                 contest.save()
-                teams = TeamContest.objects.filter(contest=contest)
+                team_contests = TeamContest.objects.filter(contest=contest)
             else:
                 print('You already participate')
+        for entry in team_contests:
+            teams.append(entry.team)
 
         return render(request, 'contest_info.html', {'contest': contest, 'teams': teams})
 
@@ -294,6 +295,51 @@ def match_definition(request):
         else:
             form = MatchDefinitionForm()
             return render(request, 'match_definition.html', {'form': form})
+
+    print('Access denied!')
+    raise Http404
+
+
+def get_teams(request):
+    if request.user.has_perm('contest.can_add_match'):
+        if request.method == 'GET':
+            matches_id = request.GET.getlist('matches[]')
+            print(matches_id)
+            teams = {}
+            for match_id in matches_id:
+                try:
+
+                    match = Match.objects.get(id=match_id)
+                    for team in match.teams.all():
+                        teams[str(team.id)] = str(team.name)
+
+                    return JsonResponse({'status': 'success', 'teams': teams})
+
+                except ValueError:
+
+                    return JsonResponse({'status': 'failure', 'error': 'invalid input'})
+        else:
+            return JsonResponse({'status': 'failure'})
+
+    print('Access denied!')
+    raise Http404
+
+
+def get_matches(request):
+    if request.user.has_perm('contest.can_add_match'):
+        if request.method == 'GET':
+            contest = request.GET['contest']
+            date_time = request.GET['date_time']
+            try:
+                matches = Match.objects.filter(contest=contest).filter(date_time__lt=date_time)
+                matches_dict = {}
+                for match in matches:
+                    matches_dict[str(match.id)] = str(match)
+                return JsonResponse({'status': 'success', 'matches': matches_dict})
+            except ValueError:
+                return JsonResponse({'status': 'failure', 'error': 'invalid input'})
+        else:
+            return JsonResponse({'status': 'failure'})
 
     print('Access denied!')
     raise Http404
