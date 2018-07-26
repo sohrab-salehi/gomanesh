@@ -281,12 +281,36 @@ def match_definition(request):
                 contest = form.cleaned_data.get('contest')
                 date_time = form.cleaned_data.get('date_time')
                 level = form.cleaned_data.get('level')
+                teams = form.cleaned_data.get('teams')
+                required_matches = form.cleaned_data.get('required_matches')
                 match = Match(contest=contest, date_time=date_time, level=level)
                 match.save()
-                teams = form.cleaned_data.get('teams')
-                for team in teams:
-                    match_team = MatchTeam(match=match, team=team)
-                    match_team.save()
+                try:
+                    if len(required_matches) == 0:
+                        for team in teams:
+                            match_team = MatchTeam(match=match, team=team)
+                            match_team.save()
+
+                    else:
+                        for required_match in required_matches:
+                            match.required_matches.add(required_match.id)
+
+                        required_teams = []
+                        for required_match in match.required_matches.all():
+                            for team in required_match.teams.all():
+                                required_teams.append(team)
+
+                        for team in teams:
+                            if team in required_teams:
+                                print(match)
+                                match_team = MatchTeam(match=match, team=team)
+                                match_team.save()
+                            else:
+                                print('Invalid form')
+                                raise Http404
+                except:
+                    match.delete()
+
                 print('Success')
                 return redirect('home')
             else:
@@ -304,20 +328,26 @@ def get_teams(request):
     if request.user.has_perm('contest.can_add_match'):
         if request.method == 'GET':
             matches_id = request.GET.getlist('matches[]')
-            print(matches_id)
+            contest_id = request.GET.get('contest')
+            contest = Contest.objects.get(id=contest_id)
             teams = {}
-            for match_id in matches_id:
-                try:
 
-                    match = Match.objects.get(id=match_id)
-                    for team in match.teams.all():
-                        teams[str(team.id)] = str(team.name)
+            if len(matches_id) == 0:
+                for team_contest in contest.teamcontest_set.all():
+                    teams[str(team_contest.team.id)] = str(team_contest.team.name)
 
-                    return JsonResponse({'status': 'success', 'teams': teams})
+            else:
+                for match_id in matches_id:
+                    try:
+                        match = Match.objects.get(id=match_id)
+                        for team in match.teams.all():
+                            teams[str(team.id)] = str(team.name)
 
-                except ValueError:
+                    except ValueError:
+                        return JsonResponse({'status': 'failure', 'error': 'invalid input'})
 
-                    return JsonResponse({'status': 'failure', 'error': 'invalid input'})
+            return JsonResponse({'status': 'success', 'teams': teams})
+
         else:
             return JsonResponse({'status': 'failure'})
 
@@ -331,10 +361,11 @@ def get_matches(request):
             contest = request.GET['contest']
             date_time = request.GET['date_time']
             try:
-                matches = Match.objects.filter(contest=contest).filter(date_time__lt=date_time)
+                matches = Match.objects.filter(contest=contest, date_time__lt=date_time)
                 matches_dict = {}
                 for match in matches:
                     matches_dict[str(match.id)] = str(match)
+                    print(match)
                 return JsonResponse({'status': 'success', 'matches': matches_dict})
             except ValueError:
                 return JsonResponse({'status': 'failure', 'error': 'invalid input'})

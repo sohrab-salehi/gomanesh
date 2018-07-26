@@ -59,7 +59,8 @@ class Match(models.Model):
     date_time = models.DateTimeField()
     level = models.CharField(max_length=50)
     contest = models.ForeignKey(Contest, on_delete=models.CASCADE, null=True)
-    teams = models.ManyToManyField(Team, through='MatchTeam', through_fields=('match', 'team'))
+    teams = models.ManyToManyField(Team, through='MatchTeam', through_fields=('match', 'team'), blank=True)
+    required_matches = models.ManyToManyField('self', blank=True)
 
     class Meta:
         verbose_name_plural = "Matches"
