@@ -3,12 +3,12 @@
 {% block content %}
     <h2>Active contests list:</h2>
     <ul>
-        <li>
-            {% for contest in contests %}
+        {% for contest in contests %}
+            <li>
                 <div>
                     <a href="{% url 'contest_info' contest.id%}">{{ contest }}</a>
                 </div>
-            {% endfor %}
-        </li>
+            </li>
+        {% endfor %}
     </ul>
 {% endblock %}

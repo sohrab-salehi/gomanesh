@@ -266,11 +266,26 @@ def contest_info(request, contest_id):
     return redirect('login')
 
 
-def match_management(request):
+def matches_page(request):
+    if request.user.has_perms('contest.can_change_match', 'contest.can_delete_match'):
+        if request.method == 'POST':
+            matches_id = request.POST.getlist('match')
+            for id in matches_id:
+                match = Match.objects.get(id=id)
+                match.delete()
+        matches = Match.objects.all()
+        return render(request, 'matches.html', {'matches': matches})
+
+    print('Access denied')
+    raise Http404
+
+
+def match_management(request, match_id):
     if request.user.has_perms('contest.can_change_match'):
         print('ok')
 
     print('Access denied')
+    raise Http404
 
 
 def match_definition(request):

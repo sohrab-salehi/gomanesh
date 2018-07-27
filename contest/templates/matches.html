@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Active matches list:</h2>
+    <form method="post">
+        {% csrf_token %}
+        {% for match in matches %}
+            <input type="checkbox" id="{{ match.id }}" value="{{ match.id }}" name="match"/>
+            <label for="{{ match.id }}">{{ match }}</label>
+            <br>
+        {% endfor %}
+        <button type="submit">Delete</button>
+    </form>
+{% endblock %}
