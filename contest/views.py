@@ -1,10 +1,15 @@
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
 from django.http.response import Http404, JsonResponse
-import json
+from django.template.defaulttags import register
 
 from .forms import *
 from .models import *
+
+
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key)
 
 
 def home(request):
@@ -282,10 +287,87 @@ def matches_page(request):
 
 def match_management(request, match_id):
     if request.user.has_perms('contest.can_change_match'):
-        print('ok')
+        try:
+            match = Match.objects.get(id=match_id)
+        except:
+            print('Match not found!')
+            raise Http404
+
+        required_matches = match.required_matches.all()
+        teams = match.teams.all()
+        scores = {}
+        for match_team in match.matchteam_set.all():
+            scores[match_team.team.id] = match_team.score
+        print(scores)
+        available_teams = []
+        for require_match in required_matches:
+            for team in require_match.teams.all():
+                available_teams.append(team)
+
+        return render(request, 'match_management.html', {'required_matches': required_matches, 'teams': teams,
+                                                         'scores': scores, 'available_teams': available_teams,
+                                                         'match_id': match_id})
 
     print('Access denied')
     raise Http404
+
+
+def match_management_delete_team(request, match_id):
+    if request.user.has_perms('contest.can_change_match'):
+        if request.method == 'POST':
+            teams_id = request.POST.getlist('team')
+            for team_id in teams_id:
+                match_team = MatchTeam.objects.get(team=team_id, match=match_id)
+                match_team.delete()
+
+    return redirect('match_management', match_id)
+
+
+def match_management_add_team(request, match_id):
+    if request.user.has_perms('contest.can_change_match'):
+        if request.method == 'POST':
+            teams_id = request.POST.getlist('available_teams')
+            try:
+                match = Match.objects.get(id=match_id)
+            except:
+                print('Match not found!')
+                raise Http404
+
+            required_matches = match.required_matches.all()
+            available_teams = []
+            for require_match in required_matches:
+                for team in require_match.teams.all():
+                    available_teams.append(team)
+
+            for team_id in teams_id:
+                if team_id not in available_teams:
+                    team = Team.objects.get(id=team_id)
+                    print(match)
+                    match_team = MatchTeam(team=team, match=match)
+                    match_team.save()
+                else:
+                    print('Invalid data')
+
+    return redirect('match_management', match_id)
+
+
+def update_score(request, match_id, team_id):
+    if request.user.has_perms('contest.can_change_match'):
+        if request.method == 'POST':
+            score = request.POST['score']
+            try:
+                match = Match.objects.get(id=match_id)
+                team = Team.objects.get(id=team_id)
+                match_team = MatchTeam.objects.get(team=team, match=match)
+            except:
+                print('Invalid data')
+                raise Http404
+
+            match_team.score = score
+            match_team.save()
+            print(match_team.score)
+
+    return redirect('match_management', match_id)
 
 
 def match_definition(request):

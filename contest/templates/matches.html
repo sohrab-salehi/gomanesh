@@ -6,7 +6,9 @@
         {% csrf_token %}
         {% for match in matches %}
             <input type="checkbox" id="{{ match.id }}" value="{{ match.id }}" name="match"/>
-            <label for="{{ match.id }}">{{ match }}</label>
+            <label for="{{ match.id }}">
+                <a href="{% url 'match_management' match.id%}">{{ match }}</a>
+            </label>
             <br>
         {% endfor %}
         <button type="submit">Delete</button>

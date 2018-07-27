@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block extra_js %}
+    <script>
+      $(function(){
+        $("#add").click(function(){
+          $("#add_modal").modal('show');
+        });
+        $("#add_modal").modal({
+          closable: true
+        });
+        $("#delete").click(function(){
+          $("#delete_modal").modal('show');
+        });
+        $("#delete_modal").modal({
+          closable: true
+        });
+      });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <h2>Required matches list:</h2>
+    <ul>
+        {% for match in required_matches %}
+            <li>{{ match }}</li>
+        {% endfor %}
+    </ul>
+    <br>
+    <h2>Teams:</h2>
+    <ul>
+        {% for team in teams %}
+            <li>
+                <form method="post" action="{% url 'update_score' match_id team.id%}">
+                    {% csrf_token %}
+                    <label>{{ team }}</label>
+                    <input type="number" name="score" value="{{ scores|get_item:team.id }}">
+                    <button type="submit">Update</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+    <button id="add">Add</button>
+    <button id="delete">Delete</button>
+    <div class="ui modal" id="add_modal" style="text-align: left">
+        <i class="close icon"></i>
+        <div class="header">
+            Teams
+        </div>
+        <br>
+        <form method="post" action="{% url 'match_management_add_team' match_id%}">
+            {% csrf_token %}
+            {% for team in available_teams %}
+                <input type="checkbox" id="{{ team.id }}" value="{{ team.id }}" name="available_teams"/>
+                <label for="{{ team.id }}">{{ team }}</label>
+                <br>
+            {% endfor %}
+            <br>
+            <button type="submit">Add</button>
+        </form>
+    </div>
+    <div class="ui modal" id="delete_modal" style="text-align: left">
+        <i class="close icon"></i>
+        <div class="header">
+            Teams
+        </div>
+        <br>
+        <form method="post" action="{% url 'match_management_delete_team' match_id%}">
+            {% csrf_token %}
+            {% for team in teams %}
+                <input type="checkbox" id="{{ team.id }}" value="{{ team.id }}" name="team"/>
+                <label for="{{ team.id }}">{{ team }}</label>
+                <br>
+            {% endfor %}
+            <br>
+            <button type="submit">Delete</button>
+        </form>
+    </div>
+{% endblock %}
